@@ -1,0 +1,395 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+  <!--   Import ajax, tabletop and sheetsee -->
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <script type="text/javascript" src="tabletop1.3.4.js"></script>
+    <script type="text/javascript" src="sheetsee.js"></script>
+    
+    <!-- Import Material Icons -->
+    <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <!--Import materialize.css-->
+    <link type="text/css" rel="stylesheet" href="materialize.min.css"  media="screen,projection"/>
+
+   
+<!--     Import Mapbox and Leaflet marker clustering -->
+    <script src='https://api.mapbox.com/mapbox.js/v2.2.4/mapbox.js'></script>
+    <link href='https://api.mapbox.com/mapbox.js/v2.2.4/mapbox.css' rel='stylesheet' />
+    <script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-markercluster/v0.4.0/leaflet.markercluster.js'></script>
+    <link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-markercluster/v0.4.0/MarkerCluster.css' rel='stylesheet' />
+    <link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-markercluster/v0.4.0/MarkerCluster.Default.css' rel='stylesheet' />
+
+    <title>Otter Spotter Map</title>
+</head>
+
+<body>
+
+<!-- Import JQuery and Materialize JavaScript -->
+<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+<script type="text/javascript" src="materialize.min.js"></script>
+
+<!-- Side Navigation Panel and dropdowns -->
+<div id="mySidenav" class="sidenav">
+    <div class="userView">
+        <div style="text-align: center">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+        <a href="#!user"><img class="responsive-img square" src="WPZlogo.png" style="width:200px; height:200px;" ></a>
+        </div>
+        <a href="#!name"><span class="white-text name">Otter Spotter</span></a>
+        
+    </div>
+    <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+    <ul class="collapsible" data-collapsible="accordion">
+        <li>
+            <div class="collapsible-header flow-text"><i class="material-icons">list</i>Filters
+            </div>
+
+            <div class="collapsible-body">
+                <label for="Filters" class="flow-text">Click on a button to filter the sightings</label><br>
+                        <input name="Filters" class="with-gap" type="radio" id="VConfident" value="VeryConfident" />
+                         <label class="flow-text" for="VConfident">Highly confident otter sightings</label>
+                         <br>
+                        <input name="Filters" class="with-gap" type="radio" id="PupsPresent" value="PupsPresent" />
+                         <label class="flow-text" for="PupsPresent">Otter sightings with pups present</label>
+                          <br>
+                        <input name="Filters" class="with-gap" type="radio" id="LiveObservation" value="None" />
+                        <label class="flow-text" for="LiveObservation">Observations of live otters</label>
+                        <br>
+                        <input name="Filters" class="with-gap" type="radio" id="SignObservation" value="None" />
+                        <label class="flow-text" for="SignObservation">Observations of otter signs (tracks, slides, etc.)</label>
+                         <br>
+                         <input name="Filters" class="with-gap" type="radio" id="withComments" value="None" />
+                        <label  class="flow-text" for="withComments">Observations that have comments</label>
+                         <br>
+                        <input name="Filters" class="with-gap" type="radio" id="NoFilters" value="None" checked="checked"/>
+                        <label class="flow-text" for="NoFilters">No Filter</label>
+            </div>
+        </li>
+        <li>
+        <!-- Add Google Sheet Summary using encoded Google Query language found at https://developers.google.com/chart/interactive/docs/querylanguage -->
+            <div class="collapsible-header flow-text"><i class="material-icons">assessment</i>Summary</div>
+            <div class="collapsible-body"><iframe src="https://spreadsheets.google.com/tq?tqx=out:html&tq=Select%20Count(A)%2C%20Sum(M)%2C%20Sum(R)%0ALabel%20Count(A)%20'Number%20of%20Sightings'%2C%20Sum(M)%20'Total%20Number%20of%20Otters%20Spotted'%2C%20Sum(R)%20'Total%20Time%20of%20Observation%20(min)'&key=1BssuVVWZjeVpqudW-lcmM1lhi9LnrlO8RvkkC_Fcuak&gid=0" width="500" frameborder="0"></iframe>
+            </div>
+        </li>
+        <li>
+    <!--     Add link to folder in Drive that has photos -->
+            <div class="collapsible-header flow-text"><i class="material-icons">video_library</i>Otter Spotter Photos</div>
+            <div class="collapsible-body"><iframe src="https://drive.google.com/embeddedfolderview?id=0B75dNdviw-N-MDFCYnJnY29SUmc#grid"     width="500" height="400" frameborder="0"></iframe>
+            </div>
+        </li>
+    </ul>
+ <br><br>
+ 
+</div>
+
+<!-- Title and menu button -->
+<div id="main" >
+    <h3 class="light-green-text" align="center">Woodland Park Zoo's Otter Spotter Citizen Science Initative</h3>
+    <h5 class="orange-text" align="center">Otter Sightings Map</h5>
+    <span class="orange-text" style="font-size:25px; cursor:pointer" onclick="openNav()">&#9776; Menu</span>
+</div>
+
+<!-- Map -->
+<div id="map"></div>
+
+
+<script type="text/javascript">
+
+//iniatiate webpage, take google sheet data and make it into a geoJSON
+    document.addEventListener('DOMContentLoaded', function() {
+        var URL = "1BssuVVWZjeVpqudW-lcmM1lhi9LnrlO8RvkkC_Fcuak"
+        Tabletop.init( { key: URL, callback: showInfo, simpleSheet: true } );
+    });
+
+    var allData= [];
+    var bigMap= null;
+    var mydata= null;
+    var globalGeoJSON= null;
+//load mapbox map
+     L.mapbox.accessToken = "pk.eyJ1Ijoib3R0ZXJzcG90dGVyIiwiYSI6ImNpdXVhMDlqZjAzMjIydXBzbW5rYjVkbjMifQ.OmeqDy-3EUj-A_b81e-fGA";
+        bigMap= mymap;
+        var mymap= L.mapbox.map('map', "mapbox.streets", { zoomControl: true });
+ var overlays = L.layerGroup().addTo(mymap);
+// var Duwamish= L.mapbox.tileLayer('otterspotter.0scm3wok');
+
+        L.control.layers({
+    'Mapbox Streets': L.mapbox.tileLayer('mapbox.streets').addTo(mymap),
+    'Mapbox Satellite': L.mapbox.tileLayer('mapbox.satellite'),
+}, {
+    'Sightings': overlays,
+    // 'Duwamish River': Duwamish
+   
+    // 'Duwamish River': L.mapbox.tileLayer('otterspotter.0scm3wok').addTo(mymap)
+}).addTo(mymap);
+       
+
+    function showInfo(data) {
+        allData= data;
+        console.log(allData);
+        // the column headers of the info you want in your popup
+        var optionsJSON = ["sightingdate","numberotters","comments", "confidence", "distinguishpups", "sightinginputs"];
+    
+        //set geoJSON
+        var geoJSON = Sheetsee.createGeoJSON(allData, optionsJSON);
+
+        globalGeoJSON= geoJSON;
+
+        console.log("meydata", geoJSON);
+
+        showMarkers(geoJSON);
+  };
+
+  function showMarkers(geoJSON){
+    //clears markers on map
+      overlays.clearLayers();
+
+    // var ratIcon = L.icon({
+    // iconUrl: 'http://www.clipartqueen.com/image-files/paw-prints-clipart-otter.png',
+    // iconSize: [24,32.25] });
+
+      //creates clusters of markers
+ var markers = new L.MarkerClusterGroup().addTo(overlays);
+
+    for (var i = 0; i < geoJSON.length; i++) {
+        var a = geoJSON[i];
+        //create template for popups using specified options
+        var options = {
+               maxHeight: 200,
+               minWidth:200
+           };
+        var title = L.popup(options)
+            .setContent("<li>Sighting Date:</li>" + a.opts.sightingdate +"<br><li> Number of Otters:</li>" +a.opts.numberotters + "<br><li>Comments:</li>" +a.opts.comments)
+           
+
+        var marker = L.marker(new L.LatLng(a.geometry.coordinates[1], a.geometry.coordinates[0]), {
+            icon: L.mapbox.marker.icon({ 'marker-size':'small', 'marker-color': '8bc34a'})
+           // title: title
+        });
+        marker.bindPopup(title);
+        markers.addLayer(marker);
+    }
+
+    mymap.addLayer(markers);
+    mymap.fitBounds(markers);
+
+        };
+  
+            //Filter sighting points by those marked Very Confident and add them to the map.
+         $("#VConfident").click(function () {
+            if ($(this).is(":checked")) {
+            
+                var arr= globalGeoJSON.filter(function(f) {
+                   return f.opts["confidence"] === "VeryConfident";
+               });
+                 showMarkers(arr);
+
+            }
+           });
+
+         //Filter sighting points by those with pups present and add them to the map.
+         $("#PupsPresent").click(function () {
+            if ($(this).is(":checked")) {
+
+              var arr= globalGeoJSON.filter(function(f) {
+                   return f.opts["distinguishpups"] === "Yes";
+               });
+                 showMarkers(arr);
+            };
+           });
+
+         //Filter sighting points by of Live Otters and add them to the map.
+          $("#LiveObservation").click(function () {
+            if ($(this).is(":checked")) {
+
+                var arr= globalGeoJSON.filter(function(f) {
+                   return f.opts["sightinginputs"].includes('Live Otter(s)');
+               });
+                showMarkers(arr);
+
+            }
+           });
+
+          //Filter sighting points by those with Otter tracks and add them to the map.
+          $("#SignObservation").click(function () {
+            if ($(this).is(":checked")) {
+
+                var arr= globalGeoJSON.filter(function(f) {
+                   return f.opts["sightinginputs"].includes('Signs');
+               });
+                showMarkers(arr);
+
+            }
+           });
+
+          //Filter sightings for those that include comments
+          $("#withComments").click(function () {
+            if ($(this).is(":checked")) {
+
+                var arr= globalGeoJSON.filter(function(f) {
+                   return f.opts['comments'].includes(' ');
+               });
+                showMarkers(arr);
+
+            }
+           });
+
+          //Do not filter sighting points
+         $("#NoFilters").click(function () {
+            if ($(this).is(":checked")) {
+                var arr= globalGeoJSON.filter(function(f) {
+                       return f.opts['sightingdate'] != null;
+                   });
+                showMarkers(arr);
+               };
+        });
+
+</script>
+
+<script>
+    // Initialize collapse button
+    $('.button-collapse').sideNav({
+                menuWidth: 500, // Default is 240
+                edge: 'left', // Choose the horizontal origin
+                closeOnClick: true, // Closes side-nav on <a> clicks, useful for Angular/Meteor
+                opacity: false
+            }
+    );
+    // Initialize collapsible (uncomment the line below if you use the dropdown variation)
+    $('.collapsible').collapsible();
+        
+
+</script>
+<script>
+//Open navigation bar and make is slightly smaller on smaller screens
+    function openNav() {
+         var width = $(window).width();
+console.log(width);
+    if (width <= 750) { 
+        document.getElementById("mySidenav").style.width = "250px";
+        document.getElementById("main").style.marginLeft = "250px";
+        document.getElementById("map").style.marginLeft = "250px";
+        $('#map').css('width', '100%').css('width', '-=250px');
+
+    } 
+
+    else {
+        document.getElementById("mySidenav").style.width = "500px";
+        document.getElementById("main").style.marginLeft = "500px";
+        document.getElementById("map").style.marginLeft = "500px";
+        $('#map').css('width', '100%').css('width', '-=500px');
+
+    }
+}
+
+//close navigation bar
+    function closeNav() {
+        document.getElementById("mySidenav").style.width = "0";
+        document.getElementById("main").style.marginLeft= "0";
+        document.getElementById("map").style.marginLeft= "0";
+        $('#map').css('width', '100%');
+    }
+</script>
+
+</body>
+
+<style>
+
+body {
+        font-family: "Lato", sans-serif; margin: 0; padding:0;
+    }
+
+
+.leaflet-control-layers.leaflet-control{
+
+    top:75px;
+    right: 10px;
+}
+.leaflet-top.leaflet-left{
+    right: 0;
+}
+
+.leaflet-control-zoom.leaflet-bar.leaflet-control{
+    float: right;
+    right: 20px;
+}
+    .sidenav {
+        height: 100%;
+        width: 0;
+        position: absolute !important;
+        
+        top: 0;
+        left: 0;
+        background-color: #ffffff;
+        overflow-x: scroll;
+        transition: 0.5s;
+        padding-top: 60px;
+    }
+
+    .sidenav a {
+        padding: 8px 8px 8px 32px;
+        text-decoration: none;
+        font-size: 25px;
+        background-color: #ffffff;
+        display: block;
+        transition: 0.3s
+    }
+
+    .sidenav a:hover, .offcanvas a:focus{
+
+    }
+
+    .sidenav .closebtn {
+        position: absolute;
+        top: 0;
+        right: 25px;
+        font-size: 36px;
+        margin-left: 50px;
+    }
+   
+    #main {
+        transition: margin-left .5s;
+        background-color: white;
+    }
+
+    [type="radio"].with-gap:checked + label:before {
+    border-radius: 50%;
+    border: 2px solid #ff9800;
+    }
+
+    [type="radio"].with-gap:checked + label:after {
+        border-radius: 50%;
+        border: 2px solid #ff9800;
+        background-color: #ff9800;
+        z-index: 0;
+        -webkit-transform: scale(.5);
+        -moz-transform: scale(.5);
+        -ms-transform: scale(.5);
+        -o-transform: scale(.5);
+        transform: scale(.5); }
+
+
+    
+
+    /* How about a different background color? */
+    #map {top:175px; bottom:0; width: 100%; background-color: #F7CE86; position: absolute !important; z-index:-100;}
+    .leaflet-popup-content li {list-style:none;  font-weight: bold; font-size-adjust: 0.75; color:#8bc34a;} 
+    .leaflet-popup-content {width: 102px;}
+    .leaflet-popup-content img {width: 100px;}
+    a {border: none;}
+
+@media screen and (max-width:450px) {
+        .sidenav {padding-top: 15px;
+            font-size: 24px ;}
+        .leaflet-popup-content li {
+            color:purple;
+            font-size: 18px;
+
+        }
+        #map {
+            top:200px; position: relative;
+        }
+    }
+</style>
+</html>
