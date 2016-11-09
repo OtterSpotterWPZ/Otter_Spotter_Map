@@ -43,7 +43,7 @@
     <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
     <ul class="collapsible" data-collapsible="accordion">
         <li>
-            <div class="collapsible-header flow-text"><i class="material-icons">list</i>Filters
+            <div class="collapsible-header flow-text">Filters
             </div>
 
             <div class="collapsible-body">
@@ -69,13 +69,13 @@
         </li>
         <li>
         <!-- Add Google Sheet Summary using encoded Google Query language found at https://developers.google.com/chart/interactive/docs/querylanguage -->
-            <div class="collapsible-header flow-text"><i class="material-icons">assessment</i>Summary</div>
+            <div class="collapsible-header flow-text">Summary</div>
             <div class="collapsible-body"><iframe src="https://spreadsheets.google.com/tq?tqx=out:html&tq=Select%20Count(A)%2C%20Sum(M)%2C%20Sum(R)%0ALabel%20Count(A)%20'Number%20of%20Sightings'%2C%20Sum(M)%20'Total%20Number%20of%20Otters%20Spotted'%2C%20Sum(R)%20'Total%20Time%20of%20Observation%20(min)'&key=1BssuVVWZjeVpqudW-lcmM1lhi9LnrlO8RvkkC_Fcuak&gid=0" width="500" frameborder="0"></iframe>
             </div>
         </li>
         <li>
     <!--     Add link to folder in Drive that has photos -->
-            <div class="collapsible-header flow-text"><i class="material-icons">video_library</i>Otter Spotter Photos</div>
+            <div class="collapsible-header flow-text">Otter Spotter Photos</div>
             <div class="collapsible-body"><iframe src="https://drive.google.com/embeddedfolderview?id=0B75dNdviw-N-MDFCYnJnY29SUmc#grid"     width="500" height="400" frameborder="0"></iframe>
             </div>
         </li>
@@ -97,9 +97,9 @@
 
 <script type="text/javascript">
 
-//iniatiate webpage, take google sheet data and make it into a geoJSON
+//iniatiate webpage, take google sheet data and make it into a geoJSON URL is the "key" section of spreadsheet
     document.addEventListener('DOMContentLoaded', function() {
-        var URL = "1BssuVVWZjeVpqudW-lcmM1lhi9LnrlO8RvkkC_Fcuak"
+        var URL = "1Zd69BZhdeAX8HFocNI7QnAsBuM0COLJZAxQC0dqJUK4"
         Tabletop.init( { key: URL, callback: showInfo, simpleSheet: true } );
     });
 
