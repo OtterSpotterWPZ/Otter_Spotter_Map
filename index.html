@@ -95,11 +95,11 @@
 <div id="map"></div>
 
 
-<script type="text/javascript">
+<script type="text/javascript">  
 
-//iniatiate webpage, take google sheet data and make it into a geoJSON URL is the "key" section of spreadsheet
+//iniatiate webpage, take google sheet data and make it into a geoJSON
     document.addEventListener('DOMContentLoaded', function() {
-        var URL = "1Zd69BZhdeAX8HFocNI7QnAsBuM0COLJZAxQC0dqJUK4"
+        var URL = "1BssuVVWZjeVpqudW-lcmM1lhi9LnrlO8RvkkC_Fcuak"
         Tabletop.init( { key: URL, callback: showInfo, simpleSheet: true } );
     });
 
@@ -111,23 +111,29 @@
      L.mapbox.accessToken = "pk.eyJ1Ijoib3R0ZXJzcG90dGVyIiwiYSI6ImNpdXVhMDlqZjAzMjIydXBzbW5rYjVkbjMifQ.OmeqDy-3EUj-A_b81e-fGA";
         bigMap= mymap;
         var mymap= L.mapbox.map('map', "mapbox.streets", { zoomControl: true });
- var overlays = L.layerGroup().addTo(mymap);
-// var Duwamish= L.mapbox.tileLayer('otterspotter.0scm3wok');
+
+    var overlays = L.layerGroup().addTo(mymap);
+    
+
+        //console.log("Duwamish", Duwamish);
+        var Duwamish = L.mapbox.featureLayer()
+              .loadURL('duwamishfinal.geojson')
+              .addTo(mymap)
+              
 
         L.control.layers({
-    'Mapbox Streets': L.mapbox.tileLayer('mapbox.streets').addTo(mymap),
-    'Mapbox Satellite': L.mapbox.tileLayer('mapbox.satellite'),
-}, {
-    'Sightings': overlays,
-    // 'Duwamish River': Duwamish
-   
-    // 'Duwamish River': L.mapbox.tileLayer('otterspotter.0scm3wok').addTo(mymap)
-}).addTo(mymap);
+            'Mapbox Streets': L.mapbox.tileLayer('mapbox.streets').addTo(mymap),
+            'Mapbox Satellite': L.mapbox.tileLayer('mapbox.satellite'),
+        }, {
+            'Sightings': overlays,
+            'Duwamish River and Waterway': Duwamish 
+
+        }).addTo(mymap);
        
 
     function showInfo(data) {
         allData= data;
-        console.log(allData);
+     //   console.log(allData);
         // the column headers of the info you want in your popup
         var optionsJSON = ["sightingdate","numberotters","comments", "confidence", "distinguishpups", "sightinginputs"];
     
@@ -136,7 +142,7 @@
 
         globalGeoJSON= geoJSON;
 
-        console.log("meydata", geoJSON);
+        //console.log("meydata", geoJSON);
 
         showMarkers(geoJSON);
   };
@@ -164,7 +170,7 @@
            
 
         var marker = L.marker(new L.LatLng(a.geometry.coordinates[1], a.geometry.coordinates[0]), {
-            icon: L.mapbox.marker.icon({ 'marker-size':'large', 'marker-color': '8bc34a'})
+            icon: L.mapbox.marker.icon({ 'marker-size':'small', 'marker-color': '8bc34a'}) 
            // title: title
         });
         marker.bindPopup(title);
@@ -259,17 +265,20 @@
     // Initialize collapsible (uncomment the line below if you use the dropdown variation)
     $('.collapsible').collapsible();
         
+//$('[type*="radio"]').addClass('leaflet-control-layers-selector browser-default');
+
 
 </script>
 <script>
 //Open navigation bar and make is slightly smaller on smaller screens
     function openNav() {
          var width = $(window).width();
-console.log(width);
+//console.log(width);
     if (width <= 750) { 
         document.getElementById("mySidenav").style.width = "250px";
         document.getElementById("main").style.marginLeft = "250px";
         document.getElementById("map").style.marginLeft = "250px";
+        document.getElementById("map").style.marginTop = "100px";
         $('#map').css('width', '100%').css('width', '-=250px');
 
     } 
@@ -278,6 +287,7 @@ console.log(width);
         document.getElementById("mySidenav").style.width = "500px";
         document.getElementById("main").style.marginLeft = "500px";
         document.getElementById("map").style.marginLeft = "500px";
+        document.getElementById("map").style.marginTop = "50px";
         $('#map').css('width', '100%').css('width', '-=500px');
 
     }
@@ -288,6 +298,7 @@ console.log(width);
         document.getElementById("mySidenav").style.width = "0";
         document.getElementById("main").style.marginLeft= "0";
         document.getElementById("map").style.marginLeft= "0";
+        document.getElementById("map").style.marginTop = "0";
         $('#map').css('width', '100%');
     }
 </script>
@@ -297,9 +308,15 @@ console.log(width);
 <style>
 
 body {
-        font-family: "Lato", sans-serif; margin: 0; padding:0;
+        font-family: "Calibri", sans-serif; margin: 0; padding:0;
     }
+header { width:1000px; }
 
+@media only screen and (max-width: 600px){
+
+       header { width:600px; }
+
+}
 
 .leaflet-control-layers.leaflet-control{
 
@@ -370,7 +387,18 @@ body {
         transform: scale(.5); }
 
 
-    
+    .leaflet-control-layers-base label:hover {
+        color: black;
+        background-color: #8bc34a!important;
+        cursor:pointer;
+    }
+
+
+    .leaflet-control-layers-overlays label:hover {
+        color:black;
+        background-color: #8bc34a!important;
+        cursor:pointer;
+    }
 
     /* How about a different background color? */
     #map {top:175px; bottom:0; width: 100%; background-color: #F7CE86; position: absolute !important; z-index:-100;}
@@ -379,8 +407,30 @@ body {
     .leaflet-popup-content img {width: 100px;}
     a {border: none;}
 
-@media screen and (max-width:450px) {
-        .sidenav {padding-top: 15px;
+@media screen and (max-width:1000px) {
+        
+
+.leaflet-control-layers.leaflet-control{
+
+    top:75px;
+    right: 10px;
+}
+.leaflet-top.leaflet-left{
+    right: 0;
+    
+}
+
+.leaflet-control-zoom.leaflet-bar.leaflet-control{
+    float: right;
+    right: 20px;
+    bottom:20px;
+    top:20px;
+}
+    }
+
+@media screen and (max-width:1000px) {
+
+.sidenav {padding-top: 15px;
             font-size: 24px ;}
         .leaflet-popup-content li {
             color:purple;
@@ -390,6 +440,6 @@ body {
         #map {
             top:200px; position: relative;
         }
-    }
+}
 </style>
 </html>
