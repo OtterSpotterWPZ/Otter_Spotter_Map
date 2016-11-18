@@ -120,12 +120,19 @@
               .loadURL('duwamishfinal.geojson');
               
 
+ var GreenRiver = L.mapbox.featureLayer()
+              .loadURL('GreenRiver2.geojson'); 
+    
+//Layer control allows user to toggle between basemaps and turn layers on/ off.
         L.control.layers({
-            'Mapbox Streets': L.mapbox.tileLayer('mapbox.streets').addTo(mymap),
-            'Mapbox Satellite': L.mapbox.tileLayer('mapbox.satellite'),
+            //This should be only base layers. Only one of these can be chosen at a time
+            'Streets': L.mapbox.tileLayer('mapbox.streets').addTo(mymap),
+            'Satellite': L.mapbox.tileLayer('mapbox.satellite'),
         }, {
+            //This should only be overlays and layers added to the map. All of these can be chosen or not chosen to show on the map at a time. Format: 'Name to appear on map': variable name created above. 
             'Sightings': overlays,
-            'Duwamish River and Waterway': Duwamish 
+            'Duwamish River and Waterway': Duwamish,
+            'Green River': GreenRiver
 
         }).addTo(mymap);
        
