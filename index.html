@@ -69,7 +69,7 @@
                 <br>
 
                 <input name="Filters" class="with-gap" type="radio" id="withID" value="None"/>
-                <label class="flow-text" for="withID">Observations that have Reference Siting ID: </label>
+                <label class="flow-text" for="withID">Observations that have Reference Sighting ID: </label>
                 <input type="text" id="lookupID">
                 <br>
 
@@ -188,7 +188,7 @@
                 minWidth: 200
             };
             var title = L.popup(options)
-                    .setContent("<li>Sighting Date:</li>" + a.opts.sightingdate + "<br><li> Number of Otters:</li>" + a.opts.numberotters + "<br><li>Comments:</li>" + a.opts.comments + "<br><li>Siting Reference Id:</li>" + (a.opts.rowNumber + 1));
+                    .setContent("<li>Sighting Date:</li>" + a.opts.sightingdate + "<br><li> Number of Otters:</li>" + a.opts.numberotters + "<br><li>Comments:</li>" + a.opts.comments + "<br><li>Sighting Reference Id:</li>" + (a.opts.rowNumber + 1));
 
 
             var marker = L.marker(new L.LatLng(a.geometry.coordinates[1], a.geometry.coordinates[0]), {
