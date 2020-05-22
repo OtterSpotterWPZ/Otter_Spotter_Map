@@ -175,21 +175,25 @@
 
         for (var i = 0; i < geoJSON.length; i++) {
             var a = geoJSON[i];
-            //create template for popups using specified options
-            var options = {
+
+            if (!isNaN(a.geometry.coordinates[1]) && !isNaN(a.geometry.coordinates[0])) {
+              //create template for popups using specified options
+              var options = {
                 maxHeight: 200,
                 minWidth: 200
-            };
-            var title = L.popup(options)
-                    .setContent("<li>Sighting Date:</li>" + a.opts.sightingdate + "<br><li> Number of Otters:</li>" + a.opts.numberotters + "<br><li>Comments:</li>" + a.opts.comments + "<br><li>Siting Reference Id:</li>" + (a.opts.rowNumber + 1));
+              };
+              var title = L.popup(options)
+                .setContent("<li>Sighting Date:</li>" + a.opts.sightingdate + "<br><li> Number of Otters:</li>" + a.opts.numberotters + "<br><li>Comments:</li>" + a.opts.comments + "<br><li>Siting Reference Id:</li>" + (a.opts.rowNumber + 1));
 
 
-            var marker = L.marker(new L.LatLng(a.geometry.coordinates[1], a.geometry.coordinates[0]), {
+              var marker = L.marker(new L.LatLng(a.geometry.coordinates[1], a.geometry.coordinates[0]), {
                 icon: L.mapbox.marker.icon({'marker-size': 'small', 'marker-color': '8bc34a'})
                 // title: title
-            });
-            marker.bindPopup(title);
-            markers.addLayer(marker);
+              });
+              marker.bindPopup(title);
+              markers.addLayer(marker);
+            }
+
         }
 
         mymap.addLayer(markers);
