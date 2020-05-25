@@ -30,7 +30,7 @@
 
 <!-- Import JQuery and Materialize JavaScript -->
 <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/js/materialize.min.js"></script>
 
 <!-- Side Navigation Panel and dropdowns -->
 <div id="mySidenav" class="sidenav">
@@ -188,6 +188,7 @@
               var options = {
                 maxHeight: 200,
                 minWidth: 200
+              }
 
               var title = L.popup(options)
                     .setContent("<li>Sighting Date:</li>" + a.opts.sightingdate + "<br><li> Number of Otters:</li>" + a.opts.numberotters + "<br><li>Comments:</li>" + a.opts.comments + "<br><li>Sighting Reference Id:</li>" + (a.opts.rowNumber + 1));
@@ -523,6 +524,6 @@
         }
     }
 
-    
+
 </style>
 </html>
