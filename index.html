@@ -67,6 +67,13 @@
                 <input name="Filters" class="with-gap" type="radio" id="withComments" value="None"/>
                 <label class="flow-text" for="withComments">Observations that have comments</label>
                 <br>
+
+                <input name="Filters" class="with-gap" type="radio" id="withID" value="None"/>
+                <label class="flow-text" for="withID">Observations that have Reference Sighting ID: </label>
+                <input type="text" id="lookupID">
+                <br>
+
+
                 <input name="Filters" class="with-gap" type="radio" id="NoFilters" value="None" checked="checked"/>
                 <label class="flow-text" for="NoFilters">No Filter</label>
             </div>
@@ -181,9 +188,10 @@
               var options = {
                 maxHeight: 200,
                 minWidth: 200
-              };
+
               var title = L.popup(options)
-                .setContent("<li>Sighting Date:</li>" + a.opts.sightingdate + "<br><li> Number of Otters:</li>" + a.opts.numberotters + "<br><li>Comments:</li>" + a.opts.comments + "<br><li>Siting Reference Id:</li>" + (a.opts.rowNumber + 1));
+                    .setContent("<li>Sighting Date:</li>" + a.opts.sightingdate + "<br><li> Number of Otters:</li>" + a.opts.numberotters + "<br><li>Comments:</li>" + a.opts.comments + "<br><li>Sighting Reference Id:</li>" + (a.opts.rowNumber + 1));
+
 
 
               var marker = L.marker(new L.LatLng(a.geometry.coordinates[1], a.geometry.coordinates[0]), {
@@ -261,6 +269,34 @@
 
         }
     });
+
+    //Filter sighting points by a specific id
+    $("#withID").click(function () {
+        if ($(this).is(":checked")) {
+
+            var id = $('#lookupID:text').val();
+
+            var arr = globalGeoJSON.filter(function (f) {
+                return f.opts["rowNumber"] === (parseInt(id, 10) - 1 );
+            });
+            showMarkers(arr);
+        }
+    });
+
+    //If ID is updated and filter for ID is selected
+    $("#lookupID").on('input', function() {
+
+        var id = $('#lookupID:text').val();
+
+        if ($(("#withID")).is(":checked")) {
+
+            var arr = globalGeoJSON.filter(function (f) {
+                return f.opts["rowNumber"] === (parseInt(id, 10) - 1 );
+            });
+            showMarkers(arr);
+        }
+    });
+
 
     //Do not filter sighting points
     $("#NoFilters").click(function () {
@@ -459,6 +495,13 @@
         border: none;
     }
 
+    #lookupID {
+        display: inline;
+        width: 55px;
+        padding: 0;
+        margin: 0;
+    }
+
     @media screen and (max-width: 1000px) {
 
         .leaflet-control-layers.leaflet-control {
@@ -480,17 +523,6 @@
         }
     }
 
-    @media screen and (max-width: 1000px) {
-
-        .sidenav {
-            padding-top: 15px;
-            font-size: 24px;
-        }
-
-        #map {
-            top: 200px;
-            position: relative;
-        }
-    }
+    
 </style>
 </html>
